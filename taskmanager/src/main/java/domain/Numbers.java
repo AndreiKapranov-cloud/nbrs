@@ -1,15 +1,33 @@
 package domain;
 
-public class Numbers {
+import java.util.ArrayList;
+import java.util.List;
 
-    private int number;
-    public int getNumber(){
-        return this.number;
-    }
-    public void setNumber(int number){
-        if(number > -2147483648 && number <2147483647)
-            this.number = number;
-    }
+public class Numbers
+{
+	private final List<Integer> collection = new ArrayList<>();
+
+	public List<Integer> getCollection()
+	{
+		return new ArrayList<>(collection);
+	}
+
+	public void addNumber(String s) throws NumberFormatException
+	{
+		collection.add(parseInteger(s));
+	}
+
+	public static Integer parseInteger(String s) throws NumberFormatException
+	{
+		try
+		{
+			return Integer.parseInt(s);
+		}
+		catch (NullPointerException e)
+		{
+			throw new NumberFormatException(e.getMessage());
+		}
+	}
 }
 
 

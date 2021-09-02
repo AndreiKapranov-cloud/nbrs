@@ -1,44 +1,80 @@
 package service;
 
-import domain.Numbers;
-
 import java.util.Collections;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-public class ServiceImpl implements Service {
-    /**
-     * @param numbers all the numbers we have
-     */
-    Scanner scanner = new Scanner(System.in);
-    Numbers number = new Numbers();
+import domain.Numbers;
 
-    @Override
-    public void ShowTheResult(List<Integer> numbers) {
-        System.out.println(numbers);
-        System.out.println("Max= " + Collections.max(numbers));
-        System.out.println("Min= " + Collections.min(numbers));
-        System.out.println("Average= " + numbers.stream().mapToInt(val -> val).average().orElse(0.0));
-    }
-//when we start the application
-    @Override
-    public int getFirstNumber() {
-        try {
-            number.setNumber(scanner.nextInt());
-        } catch (
-                InputMismatchException e) {//if user types String instead of int.
-            scanner.nextLine();
-            System.out.println("Only int:");
-            number.setNumber(scanner.nextInt());
-        }
-        return number.getNumber();
-    }
+public class ServiceImpl
+{
+	private static final String ENTER_A_NUMBER_MESSAGE = "Please,enter a number:";
+	private static final String ONLY_NUMBERS_MESSAGE = "Only numbers!";
+	private static final String ONLY_NUMBERS_FOR_INTERFACE_MESSAGE = "Only numbers from 1 to 3!";
+	private static final String INTERFACE_MESSAGE =
+		"If you want to enter a number-press 1,if you want to see max,min and average-press 2," +
+			"if you want to quit-press 3:";
+	private static final Scanner scanner = new Scanner(System.in);
+	private static final Numbers numbers = new Numbers();
 
-    @Override
-    public void addNumber(List<Integer> numbers) {
-        System.out.println("Please,enter a number:");
-        number.setNumber(scanner.nextInt());
-        numbers.add(number.getNumber());
-    }
+	public void addNewNumber()
+	{
+		System.out.println(ENTER_A_NUMBER_MESSAGE);
+		try
+		{
+			numbers.addNumber(scanner.next());
+		}
+		catch (NumberFormatException e)
+		{
+			System.out.println(ONLY_NUMBERS_MESSAGE);
+			addNewNumber();
+		}
+	}
+
+	public boolean processInterfaceMessage()
+	{
+		System.out.println(INTERFACE_MESSAGE);
+		Integer decision;
+		try
+		{
+			String next = scanner.next();
+			decision = Numbers.parseInteger(next);
+			return processDecision(decision);
+		}
+		catch (NumberFormatException e)
+		{
+			System.out.println(ONLY_NUMBERS_FOR_INTERFACE_MESSAGE);
+			return processInterfaceMessage();
+		}
+
+	}
+
+	private boolean processDecision(Integer decision) throws NumberFormatException
+	{
+		switch (decision)
+		{
+			case 1:
+				addNewNumber();
+				break;
+			case 2:
+				printResult();
+				break;
+			case 3:
+				return false;
+			default:
+				throw new NumberFormatException("");
+		}
+		return true;
+	}
+
+	private void printResult()
+	{
+		List<Integer> collection = numbers.getCollection();
+
+		System.out.println(collection);
+		System.out.println("Max= " + Collections.max(collection));
+		System.out.println("Min= " + Collections.min(collection));
+		System.out.println("Average= " + collection.stream().mapToInt(val -> val).average().orElse(0.0));
+	}
+
 }
